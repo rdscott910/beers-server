@@ -1,0 +1,99 @@
+var express = require('express');
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+
+mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/beers');
+
+var Beer = require("./models/BeerModel");
+var Review = require("./models/ReviewModel");
+
+var app = express();
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use(express.static('public'));
+app.use(express.static('node_modules'));
+
+app.get('/beers', function (req, res) {
+  Beer.find(function (error, beers) {
+    res.send(beers);
+  });
+});
+
+app.post('/beers', function (req, res, next) {
+  var beer = new Beer(req.body);
+
+  beer.save(function(err, beer) {
+    if (err) { return next(err); }
+
+    res.json(beer);
+  });
+});
+
+app.put('/beers/:id',  function(req, res, next) {
+  Beer.findById(req.params.id, function (error, beer) {
+    beer.name = req.body.name;
+
+    beer.save(function(err, beer) {
+      if (err) { return next(err); } 
+
+      res.json(beer);
+    });
+  });
+});
+
+app.delete('/beers/:id', function (req, res) {
+  Beer.findById(req.params.id, function (error, beer) {
+    if (error) {
+      res.status(500);
+      res.send(error);
+    } else {
+      beer.remove();
+      res.status(204);
+      res.end();
+    }
+  });
+});
+
+app.post('/beers/:id/reviews', function(req, res, next) {
+  Beer.findById(req.params.id, function(err, beer) {
+    if (err) { return next(err); }
+
+    var review = new Review(req.body);
+
+    beer.reviews.push(review);
+
+    beer.save(function (err, beer) {
+      if (err) { return next(err); }
+    
+      res.json(review);
+    });
+  });
+});
+
+app.delete('/beers/:beer/reviews/:review', function(req, res, next) {
+  Beer.findById(req.params.beer, function (err, beer) {
+    for (var i = 0; i < beer.reviews.length; i ++) {
+      if (beer.reviews[i]["_id"] == req.params.review) {
+        beer.reviews.splice(i, 1);
+        beer.save();
+
+        res.status(204);
+        res.end();
+      }
+    }
+  });
+});
+
+var port = process.env.PORT || 4000;
+
+app.listen(port, function () {
+  console.log('Listening on port ' + port);
+});

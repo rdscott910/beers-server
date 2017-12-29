@@ -11,6 +11,7 @@ var app = express();
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
@@ -28,7 +29,10 @@ app.get('/beers', function (req, res) {
 });
 
 app.post('/beers', function (req, res, next) {
+  console.log(req.body);
+
   var beer = new Beer(req.body);
+
 
   beer.save(function(err, beer) {
     if (err) { return next(err); }
@@ -42,7 +46,7 @@ app.put('/beers/:id',  function(req, res, next) {
     beer.name = req.body.name;
 
     beer.save(function(err, beer) {
-      if (err) { return next(err); } 
+      if (err) { return next(err); }
 
       res.json(beer);
     });
@@ -72,7 +76,7 @@ app.post('/beers/:id/reviews', function(req, res, next) {
 
     beer.save(function (err, beer) {
       if (err) { return next(err); }
-    
+
       res.json(review);
     });
   });

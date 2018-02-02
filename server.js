@@ -43,11 +43,25 @@ app.post('/beers', function (req, res, next) {
 
 app.put('/beers/:id',  function(req, res, next) {
   Beer.findById(req.params.id, function (error, beer) {
-    beer.name = req.body.name;
-    beer.style = req.body.style;
-    beer.image_url = req.body.image_url;
-    beer.abv = req.body.abv;
-    beer.reviews = req.body.reviews;
+    if (req.body.name) {
+      beer.name = req.body.name;
+    }
+
+    if (req.body.style) {
+      beer.style = req.body.style;
+    }
+
+    if (req.body.image_url) {
+      beer.image_url = req.body.image_url;
+    }
+
+    if (req.body.abv) {
+      beer.abv = req.body.abv;
+    }
+
+    if (req.body.reviews) {
+      beer.reviews = req.body.reviews;
+    }
 
     beer.save(function(err, beer) {
       if (err) { return next(err); }

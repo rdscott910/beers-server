@@ -30,8 +30,7 @@ app.get('/beers', function (req, res) {
 
 app.get('/beers/:id',  function(req, res, next) {
   Beer.findById(req.params.id, function (error, beer) {
-      res.json(beer);
-    });
+    res.json(beer);
   });
 });
 

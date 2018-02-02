@@ -28,6 +28,13 @@ app.get('/beers', function (req, res) {
   });
 });
 
+app.get('/beers/:id',  function(req, res, next) {
+  Beer.findById(req.params.id, function (error, beer) {
+      res.json(beer);
+    });
+  });
+});
+
 app.post('/beers', function (req, res, next) {
   console.log(req.body);
 

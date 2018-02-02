@@ -44,6 +44,10 @@ app.post('/beers', function (req, res, next) {
 app.put('/beers/:id',  function(req, res, next) {
   Beer.findById(req.params.id, function (error, beer) {
     beer.name = req.body.name;
+    beer.style = req.body.style;
+    beer.image_url = req.body.image_url;
+    beer.abv = req.body.abv;
+    beer.reviews = req.body.reviews;
 
     beer.save(function(err, beer) {
       if (err) { return next(err); }

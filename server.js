@@ -4,12 +4,12 @@ var bodyParser = require('body-parser');
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/beers');
 
-var Beer = require("./models/BeerModel");
-var Review = require("./models/ReviewModel");
+var BeerModel = require("./models/BeerModel");
+var { ReviewModel } = require("./models/ReviewModel");
 
 var app = express();
 
-app.use(function(req, res, next) {
+app.use(function( req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -22,14 +22,27 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('public'));
 app.use(express.static('node_modules'));
 
+var review = new ReviewModel({
+  name: 'New Review'
+});
+
+var beer = new BeerModel({
+  name: 'New Beer'
+});
+
+beer.reviews.push(review);
+
+beer.save();
+
+
 app.get('/beers', function (req, res) {
-  Beer.find(function (error, beers) {
+  BeerModel.find(function (error, beers) {
     res.send(beers);
   });
 });
 
 app.get('/beers/:id',  function(req, res, next) {
-  Beer.findById(req.params.id, function (error, beer) {
+  BeerModel.findById(req.params.id, function (error, beer) {
     res.json(beer);
   });
 });
@@ -37,7 +50,7 @@ app.get('/beers/:id',  function(req, res, next) {
 app.post('/beers', function (req, res, next) {
   console.log(req.body);
 
-  var beer = new Beer(req.body);
+  var beer = new BeerModel(req.body);
 
 
   beer.save(function(err, beer) {
@@ -48,7 +61,7 @@ app.post('/beers', function (req, res, next) {
 });
 
 app.put('/beers/:id',  function(req, res, next) {
-  Beer.findById(req.params.id, function (error, beer) {
+  BeerModel.findById(req.params.id, function (error, beer) {
     if (req.body.name) {
       beer.name = req.body.name;
     }
@@ -78,7 +91,7 @@ app.put('/beers/:id',  function(req, res, next) {
 });
 
 app.delete('/beers/:id', function (req, res) {
-  Beer.findById(req.params.id, function (error, beer) {
+  BeerModel.findById(req.params.id, function (error, beer) {
     if (error) {
       res.status(500);
       res.send(error);
@@ -91,7 +104,7 @@ app.delete('/beers/:id', function (req, res) {
 });
 
 app.post('/beers/:id/reviews', function(req, res, next) {
-  Beer.findById(req.params.id, function(err, beer) {
+  BeerModel.findById(req.params.id, function(err, beer) {
     if (err) { return next(err); }
 
     var review = new Review(req.body);
@@ -107,7 +120,7 @@ app.post('/beers/:id/reviews', function(req, res, next) {
 });
 
 app.delete('/beers/:beer/reviews/:review', function(req, res, next) {
-  Beer.findById(req.params.beer, function (err, beer) {
+  BeerModel.findById(req.params.beer, function (err, beer) {
     for (var i = 0; i < beer.reviews.length; i ++) {
       if (beer.reviews[i]["_id"] == req.params.review) {
         beer.reviews.splice(i, 1);

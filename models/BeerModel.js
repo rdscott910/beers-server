@@ -1,12 +1,13 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var Review = require('./ReviewModel');
 
 var BeerSchema = new Schema({
   name: String,
   style: String,
   image_url: String,
   abv: Number,
-  reviews: []
+  reviews: [Review.ReviewSchema]
 });
 
 var Beer = mongoose.model('Beer', BeerSchema);

@@ -22,19 +22,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('public'));
 app.use(express.static('node_modules'));
 
-var review = new ReviewModel({
-  name: 'New Review'
-});
-
-var beer = new BeerModel({
-  name: 'New Beer'
-});
-
-beer.reviews.push(review);
-
-beer.save();
-
-
 app.get('/beers', function (req, res) {
   BeerModel.find(function (error, beers) {
     res.send(beers);

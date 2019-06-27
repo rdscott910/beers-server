@@ -94,7 +94,7 @@ app.post('/beers/:id/reviews', function(req, res, next) {
   BeerModel.findById(req.params.id, function(err, beer) {
     if (err) { return next(err); }
 
-    var review = new Review(req.body);
+    var review = new ReviewModel(req.body);
 
     beer.reviews.push(review);
 

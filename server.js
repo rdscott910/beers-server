@@ -112,7 +112,6 @@ app.delete('/beers/:beer/reviews/:review', function(req, res, next) {
       if (beer.reviews[i]["_id"] == req.params.review) {
         beer.reviews.splice(i, 1);
         beer.save();
-x1
         res.status(204);
         res.end();
       }

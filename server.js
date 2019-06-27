@@ -96,8 +96,6 @@ app.post('/beers/:id/reviews', function(req, res, next) {
 
     var review = new ReviewModel(req.body);
 
-    // beer.reviews.push(review);
-
     ReviewModel.update(
       { _id: review._id },
       { $push: { reviews: review }}
